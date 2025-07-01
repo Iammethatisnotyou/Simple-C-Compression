@@ -1,7 +1,7 @@
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "../util.h"
 
@@ -10,12 +10,12 @@
 char *run_length_compression(unsigned int size, char *current_str, char *new_str) {
 	unsigned int char_amount = 0, out_i = 0, j = 0;
 	for (j = 1; j < size; j++) {
-		if (current_str[j] == current_str[j - 1]) char_amount++;
+		if (current_str[j] == current_str[j - 1]) { char_amount++;
 
-		else {
+		} else {
 			new_str = realloc(new_str, strlen(new_str) + 4);
 			malloc_check(new_str);
-			out_i       += snprintf(new_str + out_i, MAX_SIZE, "%c%d", current_str[j - 1], char_amount);
+			out_i       += sprintf(new_str + out_i, "%c%d", current_str[j - 1], char_amount);
 			char_amount  = 1;
 		}
 	}

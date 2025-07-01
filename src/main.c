@@ -11,8 +11,6 @@
 #include "algorithms/run_length.h"
 #include "util.h"
 
-#define MAX_SIZE 2056 /* TODO Change snprintf size later */
-
 char *run_length_encoding(char *file, bool compression);
 void file_creation(char *contents, bool compression);
 
@@ -20,18 +18,14 @@ char *run_length_encoding(char *file, bool compression) {
 	FILE *fptr = fopen(file, "r");
 	if (fptr == NULL) invalid_file();
 
-	unsigned int size = 0;
 	int ch;
 	char *new_str = malloc(1);
 
-	while ((ch = fgetc(fptr)) != EOF) size++;
+	const unsigned int size = fgets(fptr);
 	rewind(fptr);
 
 	char *current_str = malloc(size + 1);
-	unsigned int i    = 0;
-	while ((ch = fgetc(fptr)) != EOF) {
-		current_str[i++] = ch;
-	}
+	fread(current_str, strlen(current_str), fptr);
 	current_str[size++] = '\0';
 
 	if (compression) new_str = run_length_compression(size, current_str, new_str);
@@ -65,20 +59,17 @@ void file_creation(char *contents, bool compression) {
 	FILE *fptr = fopen(file_zip, "w");
 	if (fptr == NULL) invalid_file();
 
-	if (compression) current_str = run_length_encoding(contents, true);
-	else current_str = run_length_encoding(contents, false);
+	current_str = run_length_encoding(contents, compression);
 
-	for (long unsigned int i = 0; i < strlen(current_str); i++) {
-		fputc(current_str[i], fptr);
-	}
+	fwrite(current_str, sizeof(char), strlen(current_str), fptr);
 	fclose(fptr);
 }
 int main(int argc, char *argv[]) {
 	if (argc != 3) die("Too many arguments / Not enough:");
 	else if (strcmp(argv[1], "-h") == 0) die("For help check the man page or the README.:");
 
-	else if (strcmp(argv[1], "-c") == 0) file_creation(argv[2], true);
-	else if (strcmp(argv[1], "-d") == 0) file_creation(argv[2], false);
+	else if (strcmp(argv[1], "-rc") == 0) file_creation(argv[2], true);
+	else if (strcmp(argv[1], "-rd") == 0) file_creation(argv[2], false);
 
 	else die("Invalid use, check man page or README:");
 }
