@@ -19,13 +19,14 @@ char *run_length_encoding(char *file, bool compression) {
 	if (fptr == NULL) invalid_file();
 
 	int ch;
-	char *new_str = malloc(1);
+	unsigned int size = 0;
 
-	const unsigned int size = fgets(fptr);
+	char *new_str = malloc(1);
+	while ((ch = fgetc(fptr)) != EOF) size++;
 	rewind(fptr);
 
 	char *current_str = malloc(size + 1);
-	fread(current_str, strlen(current_str), fptr);
+	fread(current_str, sizeof(char), size, fptr);
 	current_str[size++] = '\0';
 
 	if (compression) new_str = run_length_compression(size, current_str, new_str);
@@ -47,7 +48,7 @@ void file_creation(char *contents, bool compression) {
 		file_zip = realloc(file_zip, strlen(file_zip) + 2);
 		malloc_check(file_zip);
 
-		char temporary[2] = {contents[i], '\0'};
+		char temporary[2] = { contents[i], '\0' };
 		strncat(file_zip, temporary, 2);
 	}
 	file_zip = realloc(file_zip, strlen(file_zip) + 5 + 1);
