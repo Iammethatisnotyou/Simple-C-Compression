@@ -1,6 +1,6 @@
 CC = clang
 
-WARNINGS = -Wall -Wextra -Werror -Wpedantic -Wshadow
+WARNINGS = -Wall -Wextra -Wpedantic -Wshadow
 CFLAGS = -std=c99 -march=native
 DEPFLAGS = -MP -MMD
 

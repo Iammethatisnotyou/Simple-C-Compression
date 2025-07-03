@@ -13,6 +13,7 @@
 
 char *run_length_encoding(char *file, bool compression);
 void file_creation(char *contents, bool compression);
+void write_to_file(const char *file_name, const char *contents) ;
 
 char *run_length_encoding(char *file, bool compression) {
 	FILE *fptr = fopen(file, "r");
@@ -38,7 +39,6 @@ char *run_length_encoding(char *file, bool compression) {
 }
 void file_creation(char *contents, bool compression) {
 	char *file_zip = malloc(1);
-	char *current_str;
 	malloc_check(file_zip);
 	file_zip[0] = '\0';
 
@@ -48,21 +48,23 @@ void file_creation(char *contents, bool compression) {
 		file_zip = realloc(file_zip, strlen(file_zip) + 2);
 		malloc_check(file_zip);
 
-		char temporary[2] = { contents[i], '\0' };
+		const char temporary[2] = { contents[i], '\0' };
 		strncat(file_zip, temporary, 2);
 	}
-	file_zip = realloc(file_zip, strlen(file_zip) + 5 + 1);
+	file_zip = realloc(file_zip, strlen(file_zip) + 6);
 
 	if (compression) strcat(file_zip, ".vip");
 	else strcat(file_zip, ".txt");
 
 	malloc_check(file_zip);
-	FILE *fptr = fopen(file_zip, "w");
+	const char *current_str = run_length_encoding(contents, compression);
+	write_to_file(file_zip, current_str);
+}
+void write_to_file(const char *file_name, const char *contents) {
+	FILE *fptr = fopen(file_name, "w");
 	if (fptr == NULL) invalid_file();
 
-	current_str = run_length_encoding(contents, compression);
-
-	fwrite(current_str, sizeof(char), strlen(current_str), fptr);
+	fwrite(contents, sizeof(char), strlen(contents), fptr);
 	fclose(fptr);
 }
 int main(int argc, char *argv[]) {
