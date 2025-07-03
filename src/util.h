@@ -1,3 +1,5 @@
+/* SCC - Simple C Compression */
+
 void die(const char *fmt);
 void invalid_file(void);
 void malloc_check(void *ptr);

@@ -1,3 +1,5 @@
+# SCC - Simple C Compression
+
 CC = clang
 
 WARNINGS = -Wall -Wextra -Wpedantic -Wshadow

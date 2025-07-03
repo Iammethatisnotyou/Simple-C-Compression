@@ -11,31 +11,31 @@
 #include "algorithms/run_length.h"
 #include "util.h"
 
-char *run_length_encoding(char *file, bool compression);
+char *run_length_encoding(const char *file, bool compression);
 void file_creation(char *contents, bool compression);
-void write_to_file(const char *file_name, const char *contents) ;
+void write_to_file(const char *file, const char *contents);
 
-char *run_length_encoding(char *file, bool compression) {
+char *run_length_encoding(const char *file, bool compression) {
 	FILE *fptr = fopen(file, "r");
 	if (fptr == NULL) invalid_file();
 
 	int ch;
 	unsigned int size = 0;
 
-	char *new_str = malloc(1);
+	char *run_str = malloc(1);
 	while ((ch = fgetc(fptr)) != EOF) size++;
 	rewind(fptr);
 
-	char *current_str = malloc(size + 1);
-	fread(current_str, sizeof(char), size, fptr);
-	current_str[size++] = '\0';
+	char *tmp_str = malloc(size + 1);
+	fread(tmp_str, sizeof(char), size, fptr);
+	tmp_str[size++] = '\0';
 
-	if (compression) new_str = run_length_compression(size, current_str, new_str);
-	else new_str = run_length_decompression(size, current_str, new_str);
+	if (compression) run_str = run_length_compression(size, tmp_str, run_str);
+	else run_str = run_length_decompression(size, tmp_str, run_str);
 
 	fclose(fptr);
-	free(current_str);
-	return new_str;
+	free(tmp_str);
+	return run_str;
 }
 void file_creation(char *contents, bool compression) {
 	char *file_zip = malloc(1);
@@ -48,7 +48,7 @@ void file_creation(char *contents, bool compression) {
 		file_zip = realloc(file_zip, strlen(file_zip) + 2);
 		malloc_check(file_zip);
 
-		const char temporary[2] = { contents[i], '\0' };
+		const char temporary[2] = {contents[i], '\0'};
 		strncat(file_zip, temporary, 2);
 	}
 	file_zip = realloc(file_zip, strlen(file_zip) + 6);
@@ -57,11 +57,11 @@ void file_creation(char *contents, bool compression) {
 	else strcat(file_zip, ".txt");
 
 	malloc_check(file_zip);
-	const char *current_str = run_length_encoding(contents, compression);
-	write_to_file(file_zip, current_str);
+	const char *file_contents = run_length_encoding(contents, compression);
+	write_to_file(file_zip, file_contents);
 }
-void write_to_file(const char *file_name, const char *contents) {
-	FILE *fptr = fopen(file_name, "w");
+void write_to_file(const char *file, const char *contents) {
+	FILE *fptr = fopen(file, "w");
 	if (fptr == NULL) invalid_file();
 
 	fwrite(contents, sizeof(char), strlen(contents), fptr);

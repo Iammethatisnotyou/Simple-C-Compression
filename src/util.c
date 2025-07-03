@@ -1,3 +1,5 @@
+/* SCC - Simple C Compression */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
