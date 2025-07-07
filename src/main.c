@@ -11,32 +11,9 @@
 #include "algorithms/run_length.h"
 #include "util.h"
 
-char *run_length_encoding(const char *file, bool compression);
 void file_creation(char *contents, bool compression);
 void write_to_file(const char *file, const char *contents);
 
-char *run_length_encoding(const char *file, bool compression) {
-	FILE *fptr = fopen(file, "r");
-	if (fptr == NULL) invalid_file();
-
-	int ch;
-	unsigned int size = 0;
-
-	char *run_str = malloc(1);
-	while ((ch = fgetc(fptr)) != EOF) size++;
-	rewind(fptr);
-
-	char *tmp_str = malloc(size + 1);
-	fread(tmp_str, sizeof(char), size, fptr);
-	tmp_str[size++] = '\0';
-
-	if (compression) run_str = run_length_compression(size, tmp_str, run_str);
-	else run_str = run_length_decompression(size, tmp_str, run_str);
-
-	fclose(fptr);
-	free(tmp_str);
-	return run_str;
-}
 void file_creation(char *contents, bool compression) {
 	char *file_zip = malloc(1);
 	malloc_check(file_zip);
@@ -61,7 +38,7 @@ void file_creation(char *contents, bool compression) {
 	write_to_file(file_zip, file_contents);
 }
 void write_to_file(const char *file, const char *contents) {
-	FILE *fptr = fopen(file, "w");
+	FILE *fptr = fopen(file, "wb+");
 	if (fptr == NULL) invalid_file();
 
 	fwrite(contents, sizeof(char), strlen(contents), fptr);
